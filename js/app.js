@@ -635,14 +635,6 @@ window.selectStep = function(stepNumber) {
 function updateConnectorPaths() {
   const container = document.getElementById('simulator-container');
   if (!container) return;
-  const containerRect = container.getBoundingClientRect();
-
-  // Update SVG resolution attributes to match actual layout size in pixels
-  const svg = container.querySelector('svg');
-  if (svg) {
-    svg.setAttribute('width', containerRect.width);
-    svg.setAttribute('height', containerRect.height);
-  }
 
   const n1 = document.getElementById('node-1');
   const n2 = document.getElementById('node-2');
@@ -651,35 +643,60 @@ function updateConnectorPaths() {
 
   if (!n1 || !n2 || !n3 || !n4) return;
 
-  const r1 = n1.getBoundingClientRect();
-  const r2 = n2.getBoundingClientRect();
-  const r3 = n3.getBoundingClientRect();
-  const r4 = n4.getBoundingClientRect();
+  // Set SVG coordinate resolution to match container layout size
+  const svg = container.querySelector('svg');
+  if (svg) {
+    svg.setAttribute('width', container.offsetWidth);
+    svg.setAttribute('height', container.offsetHeight);
+  }
 
-  // Get relative positions (middle of right side for start nodes, middle of left side for target nodes)
+  // Helper to compute offset left and top relative to simulator-container
+  const getPos = (el) => {
+    let left = el.offsetLeft;
+    let top = el.offsetTop;
+    let parent = el.offsetParent;
+    while (parent && parent !== container) {
+      left += parent.offsetLeft;
+      top += parent.offsetTop;
+      parent = parent.offsetParent;
+    }
+    return {
+      left,
+      top,
+      width: el.offsetWidth,
+      height: el.offsetHeight
+    };
+  };
+
+  const p1 = getPos(n1);
+  const p2 = getPos(n2);
+  const p3 = getPos(n3);
+  const p4 = getPos(n4);
+
+  // Connection points (middle of right side for start, middle of left side for end)
   const p1_right = {
-    x: (r1.right - containerRect.left),
-    y: (r1.top + r1.height / 2 - containerRect.top)
+    x: p1.left + p1.width,
+    y: p1.top + p1.height / 2
   };
   const p2_left = {
-    x: (r2.left - containerRect.left),
-    y: (r2.top + r2.height / 2 - containerRect.top)
+    x: p2.left,
+    y: p2.top + p2.height / 2
   };
   const p2_right = {
-    x: (r2.right - containerRect.left),
-    y: (r2.top + r2.height / 2 - containerRect.top)
+    x: p2.left + p2.width,
+    y: p2.top + p2.height / 2
   };
   const p3_left = {
-    x: (r3.left - containerRect.left),
-    y: (r3.top + r3.height / 2 - containerRect.top)
+    x: p3.left,
+    y: p3.top + p3.height / 2
   };
   const p3_right = {
-    x: (r3.right - containerRect.left),
-    y: (r3.top + r3.height / 2 - containerRect.top)
+    x: p3.left + p3.width,
+    y: p3.top + p3.height / 2
   };
   const p4_left = {
-    x: (r4.left - containerRect.left),
-    y: (r4.top + r4.height / 2 - containerRect.top)
+    x: p4.left,
+    y: p4.top + p4.height / 2
   };
 
   // Helper to set path 'd' attribute
