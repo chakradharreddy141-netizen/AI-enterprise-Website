@@ -1,0 +1,13 @@
+{
+  "name": "aetheris-landing-page",
+  "version": "1.0.0",
+  "description": "Premium landing page for Aetheris AI",
+  "type": "module",
+  "scripts": {
+    "dev": "node serve.mjs",
+    "test:visual": "node screenshot.mjs http://localhost:3000"
+  },
+  "dependencies": {
+    "puppeteer": "^22.11.0"
+  }
+}

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aetheris AI — Enterprise Autonomous Workspaces & Visual Cognitive Engineering</title>
+  <meta name="description" content="Aetheris AI designs and deploys next-generation autonomous multi-agent systems, secure cognitive pipelines, and isolated database clusters for Fortune 500 operations.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              base: '#050507',
+              surface: '#0d0e12',
+              surfaceHover: '#13151b',
+              textPrimary: '#ffffff',
+              textSecondary: '#a1a1aa',
+              accentCyan: '#06b6d4',
+              accentPurple: '#a855f7',
+              borderTint: 'rgba(255, 255, 255, 0.05)',
+              borderTintHover: 'rgba(6, 182, 212, 0.2)'
+            }
+          },
+          fontFamily: {
+            display: ['Space Grotesk', 'sans-serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Scroll Experience stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="text-brand-textPrimary font-sans antialiased overflow-x-hidden relative">
+
+  <!-- 1. Preloader Screen -->
+  <div id="loader">
+    <div class="loader-brand">
+      <span class="font-display font-bold text-3xl tracking-tight bg-gradient-to-r from-white to-brand-accentCyan bg-clip-text text-transparent">AETHERIS</span>
+    </div>
+    <div class="loader-bar-wrap">
+      <div id="loader-bar"></div>
+    </div>
+    <div id="loader-percent">0% LOADED</div>
+  </div>
+
+  <!-- 2. Sticky Site Header -->
+  <header class="site-header">
+    <div class="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+      <a href="#" class="flex items-center space-x-3 group">
+        <img src="brand_assets/logo.png" alt="Aetheris Logo" class="h-9 w-9 object-contain rounded-lg shadow-glow-cyan border border-brand-borderTint">
+        <span class="font-display font-bold text-2xl tracking-tight bg-gradient-to-r from-white via-brand-textSecondary to-brand-accentCyan bg-clip-text text-transparent">Aetheris</span>
+      </a>
+
+      <!-- Desktop Navigation Menu -->
+      <nav class="hidden md:flex items-center space-x-8">
+        <a href="#services" class="text-sm font-medium text-brand-textSecondary hover:text-brand-accentCyan transition-spring">Services</a>
+        <a href="#canvas-section" class="text-sm font-medium text-brand-textSecondary hover:text-brand-accentCyan transition-spring">Workspace Canvas</a>
+        <a href="#pipeline" class="text-sm font-medium text-brand-textSecondary hover:text-brand-accentCyan transition-spring">Stepper</a>
+        <a href="#pricing" class="text-sm font-medium text-brand-textSecondary hover:text-brand-accentCyan transition-spring">Pricing</a>
+        <a href="#security" class="text-sm font-medium text-brand-textSecondary hover:text-brand-accentCyan transition-spring">Security</a>
+      </nav>
+
+      <!-- CTA Button -->
+      <a href="#connect" class="transition-spring magnetic-btn shine-btn inline-flex items-center justify-center text-xs font-semibold uppercase tracking-wider text-brand-base bg-brand-accentCyan hover:scale-[1.03] hover:shadow-glow-cyan active:scale-[0.98] px-5 py-3 rounded-full">
+        Deploy Agent
+      </a>
+    </div>
+  </header>
+
+  <!-- 3. Fixed Canvas Container -->
+  <div class="canvas-wrap">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <!-- 4. Fixed Background Dark Overlay -->
+  <div id="dark-overlay"></div>
+
+  <!-- 5. Fixed Horizontal Text Marquee background -->
+  <div class="marquee-wrap">
+    <div class="marquee-text">Aetheris Cognitive Workspace Integration</div>
+  </div>
+
+  <!-- 6. Independent Standalone Hero Cover (Section 1: 0% - 12%) -->
+  <section class="hero-standalone relative overflow-hidden">
+    <!-- Subtle Background Graphics -->
+    <div class="absolute inset-0 -z-20 pointer-events-none overflow-hidden">
+      <!-- Mesh glows -->
+      <div class="absolute top-[-20%] left-[-20%] w-[70vw] h-[70vw] max-w-[600px] rounded-full bg-brand-accentCyan/12 blur-[130px] animate-pulse" style="animation-duration: 8s;"></div>
+      <div class="absolute bottom-[-20%] right-[-20%] w-[70vw] h-[70vw] max-w-[600px] rounded-full bg-brand-accentPurple/10 blur-[130px] animate-pulse" style="animation-duration: 10s;"></div>
+      <!-- Retro grid mesh -->
+      <div class="absolute inset-0 opacity-[0.05] bg-[linear-gradient(to_right,rgba(6,182,212,0.15)_1px,transparent_1px),linear-gradient(to_bottom,rgba(6,182,212,0.15)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_40%,transparent_100%)]"></div>
+    </div>
+    
+    <!-- SVG Noise Overlay -->
+    <svg class="absolute inset-0 -z-30 pointer-events-none opacity-[0.02] mix-blend-overlay w-full h-full">
+      <filter id="noiseFilter">
+        <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" stitchTiles="stitch" />
+      </filter>
+      <rect width="100%" height="100%" filter="url(#noiseFilter)" />
+    </svg>
+
+    <canvas id="particles-canvas" class="absolute inset-0 -z-10 pointer-events-none opacity-60"></canvas>
+    
+    <div class="hero-content blur-fade blur-fade-active">
+      <div class="inline-flex items-center space-x-2 bg-brand-surface border border-brand-borderTint rounded-full px-3 py-1 text-xs text-brand-accentCyan">
+        <span class="w-1.5 h-1.5 rounded-full bg-brand-accentCyan animate-pulse"></span>
+        <span class="font-medium tracking-wide">Enterprise Orchestration Active</span>
+      </div>
+      <h1 class="font-display font-bold text-5xl lg:text-7xl tracking-tight leading-[1.05] text-white">
+        <span class="sparkle-text shine-text">Automate Complexity.</span><br>
+        <span class="sparkle-text bg-gradient-to-r from-brand-accentCyan via-white to-brand-accentPurple bg-clip-text text-transparent">Engineer Scale.</span>
+      </h1>
+      <p class="text-lg text-brand-textSecondary leading-relaxed max-w-xl">
+        Constructing private, SOC-2 compliant autonomous workspaces, localized multi-agent clusters, and distributed vector data flows for large-scale operations.
+      </p>
+      
+      <div class="flex flex-wrap gap-4 pt-4 justify-center">
+        <a href="#connect" class="transition-spring magnetic-btn shine-btn inline-flex items-center justify-center text-sm font-semibold bg-gradient-to-r from-brand-accentCyan to-brand-accentPurple text-white hover:scale-[1.03] hover:shadow-glow-cyan px-8 py-4 rounded-xl active:scale-[0.98]">
+          Get Started Now
+        </a>
+      </div>
+    </div>
+
+    <!-- Client Logo Marquee Section -->
+    <div class="absolute bottom-12 left-0 w-full overflow-hidden opacity-30 pointer-events-none">
+      <div class="animate-marquee whitespace-nowrap flex items-center space-x-16">
+        <span class="text-brand-textSecondary font-display font-semibold text-sm tracking-widest uppercase">Orion Systems</span>
+        <span class="text-brand-textSecondary font-display font-semibold text-sm tracking-widest uppercase">Nexus Global</span>
+        <span class="text-brand-textSecondary font-display font-semibold text-sm tracking-widest uppercase">Vertex Capital</span>
+        <span class="text-brand-textSecondary font-display font-semibold text-sm tracking-widest uppercase">Apex Labs</span>
+        <span class="text-brand-textSecondary font-display font-semibold text-sm tracking-widest uppercase">Kronos Analytics</span>
+        <span class="text-brand-textSecondary font-display font-semibold text-sm tracking-widest uppercase font-mono">Google Cloud</span>
+        <span class="text-brand-textSecondary font-display font-semibold text-sm tracking-widest uppercase font-mono">AWS</span>
+        <span class="text-brand-textSecondary font-display font-semibold text-sm tracking-widest uppercase font-mono">Microsoft Azure</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Scroll Container (Total height 900vh drives the scroll experience) -->
+  <div id="scroll-container" style="height: 750vh;">
+
+    <!-- Section 2: Interactive Node Simulator (12% - 26% / Centered layout over dark overlay) -->
+    <section class="scroll-section centered-section" id="sec-simulator" data-enter="15" data-leave="30" data-animation="scale-up">
+      <div class="section-inner">
+        <div>
+          <span class="section-label">001 / Simulator</span>
+          <h2 class="section-heading mt-2">Deploy Multi-Agent Networks</h2>
+          <p class="section-body mt-2 max-w-xl mx-auto">
+            Simulate cognitive pipelines in real time. Click below to test active node logic routing path workflows.
+          </p>
+        </div>
+
+        <!-- Node Canvas Widget -->
+        <div class="glow-card border border-brand-borderTint/30 rounded-2xl p-6 lg:p-10 relative overflow-hidden w-full max-w-4xl">
+          <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: radial-gradient(circle, #fff 1px, transparent 1px); background-size: 24px 24px;"></div>
+          
+          <div id="simulator-container" class="relative w-full min-h-[360px] border border-brand-borderTint/20 rounded-xl p-6 flex flex-col md:flex-row justify-between items-center gap-12 md:gap-4 overflow-hidden z-10 bg-transparent">
+            <!-- Node SVG Connectors -->
+            <svg class="absolute inset-0 w-full h-full hidden md:block pointer-events-none z-0">
+              <path id="path-1-2" d="M 220,180 L 440,120" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="2"/>
+              <path id="path-1-2-active" class="connector-line" d="M 220,180 L 440,120" fill="none" stroke="#06b6d4" stroke-width="2" style="opacity: 0;"/>
+              
+              <path id="path-1-3" d="M 220,180 L 440,240" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="2"/>
+              <path id="path-1-3-active" class="connector-line" d="M 220,180 L 440,240" fill="none" stroke="#a855f7" stroke-width="2" style="opacity: 0;"/>
+
+              <path id="path-2-4" d="M 660,120 L 880,180" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="2"/>
+              <path id="path-2-4-active" class="connector-line" d="M 660,120 L 880,180" fill="none" stroke="#06b6d4" stroke-width="2" style="opacity: 0;"/>
+              
+              <path id="path-3-4" d="M 660,240 L 880,180" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="2"/>
+              <path id="path-3-4-active" class="connector-line" d="M 660,240 L 880,180" fill="none" stroke="#a855f7" stroke-width="2" style="opacity: 0;"/>
+            </svg>
+
+            <!-- Node 1 -->
+            <div class="glow-card border border-brand-borderTint rounded-xl p-4 w-52 relative z-10 transition-spring shadow-elevated" id="node-1">
+              <span class="text-[9px] uppercase font-bold text-brand-accentCyan tracking-wider bg-brand-accentCyan/10 px-2 py-0.5 rounded-full">Trigger</span>
+              <h4 class="font-display font-semibold text-white mt-3 text-xs">Webhook Ingestion</h4>
+              <p class="text-[10px] text-brand-textSecondary mt-1">Authenticates client API inputs.</p>
+            </div>
+
+            <!-- Column 2 -->
+            <div class="flex flex-col gap-8 relative z-10">
+              <div class="glow-card border border-brand-borderTint rounded-xl p-4 w-52 transition-spring shadow-elevated" id="node-2">
+                <span class="text-[9px] uppercase font-bold text-brand-accentCyan tracking-wider bg-brand-accentCyan/10 px-2 py-0.5 rounded-full">Cognitive Node</span>
+                <h4 class="font-display font-semibold text-white mt-3 text-xs">Semantic Classifier</h4>
+                <p class="text-[10px] text-brand-textSecondary mt-1">Classifies query intents locally.</p>
+              </div>
+              
+              <div class="glow-card border border-brand-borderTint rounded-xl p-4 w-52 transition-spring shadow-elevated" id="node-3">
+                <span class="text-[9px] uppercase font-bold text-brand-accentPurple tracking-wider bg-brand-accentPurple/10 px-2 py-0.5 rounded-full">Data Node</span>
+                <h4 class="font-display font-semibold text-white mt-3 text-xs">RAG Vector Fetch</h4>
+                <p class="text-[10px] text-brand-textSecondary mt-1">Queries vector structures.</p>
+              </div>
+            </div>
+
+            <!-- Node 4 -->
+            <div class="glow-card border border-brand-borderTint rounded-xl p-4 w-52 relative z-10 transition-spring shadow-elevated" id="node-4">
+              <span class="text-[9px] uppercase font-bold text-emerald-400 tracking-wider bg-emerald-400/10 px-2 py-0.5 rounded-full">Success Action</span>
+              <h4 class="font-display font-semibold text-white mt-3 text-xs">Orchestrated Output</h4>
+              <p class="text-[10px] text-brand-textSecondary mt-1">Dispatches final data packages.</p>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6 border-t border-brand-borderTint pt-6">
+            <p class="text-xs text-brand-textSecondary font-mono" id="sim-log">Simulator Status: IDLE // Ready for pipeline testing</p>
+            <button onclick="runSimulation()" class="transition-spring magnetic-btn shine-btn inline-flex items-center justify-center font-semibold bg-gradient-to-r from-brand-accentCyan to-brand-accentPurple text-white hover:scale-[1.03] px-6 py-3 rounded-lg text-xs">
+              Run Pipeline Simulation
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Services Grid (26% - 40% / Right-aligned narrative column layout) -->
+    <section class="scroll-section align-right" id="sec-services" data-enter="30" data-leave="45" data-animation="slide-right">
+      <div class="section-inner">
+        <span class="section-label">002 / Architectures</span>
+        <h2 class="section-heading">Engineered for Massive Scale</h2>
+        <p class="section-body">
+          Derive clean, responsive logic layers built using strict visual guidelines and premium typography.
+        </p>
+
+        <!-- Service Cards stacked in 40% column -->
+        <div class="space-y-6 mt-4">
+          <div class="group glow-card border border-brand-borderTint rounded-xl p-6 shadow-elevated relative overflow-hidden transition-spring hover:-translate-y-0.5">
+            <h3 class="font-display font-semibold text-lg text-white mb-2">Agentic Workspaces</h3>
+            <p class="text-sm text-brand-textSecondary leading-relaxed">
+              Multi-agent configurations executing document processing, API updates, and database actions in isolated systems.
+            </p>
+          </div>
+
+          <div class="group glow-card border border-brand-borderTint rounded-xl p-6 shadow-elevated relative overflow-hidden transition-spring hover:-translate-y-0.5">
+            <h3 class="font-display font-semibold text-lg text-white mb-2">Cognitive Data Flows</h3>
+            <p class="text-sm text-brand-textSecondary leading-relaxed">
+              Pipelines parsing unstructured vector structures to clean databases, with strict OCR verification blocks.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Workflows Stepper (40% - 54% / Left-aligned narrative column layout) -->
+    <section class="scroll-section align-left" id="sec-stepper" data-enter="45" data-leave="60" data-animation="slide-left">
+      <div class="section-inner">
+        <span class="section-label">003 / Orchestration</span>
+        <h2 class="section-heading">Trace Workflows in Real-Time</h2>
+        <p class="section-body">
+          Interact with timeline triggers to verify data transitions and pipeline build outputs.
+        </p>
+
+        <!-- Stepper Timeline Widget -->
+        <div class="glow-card border border-brand-borderTint/30 rounded-xl p-6 mt-2">
+          <div class="relative flex flex-col space-y-6 pl-8 border-l border-brand-borderTint/40 ml-2">
+            <div class="relative cursor-pointer transition-spring hover:scale-[1.01]" id="step-btn-1" onclick="selectStep(1)">
+              <div class="absolute -left-[37px] top-0.5 w-5 h-5 rounded-full bg-brand-accentCyan border border-brand-base flex items-center justify-center text-[9px] text-brand-base font-bold shadow-glow-cyan" id="step-dot-1">1</div>
+              <h4 class="font-display font-semibold text-white text-sm" id="step-title-1">Ingestion & Auth</h4>
+            </div>
+
+            <div class="relative cursor-pointer transition-spring hover:scale-[1.01]" id="step-btn-2" onclick="selectStep(2)">
+              <div class="absolute -left-[37px] top-0.5 w-5 h-5 rounded-full bg-brand-surface border border-brand-borderTint flex items-center justify-center text-[9px] text-brand-textSecondary font-bold" id="step-dot-2">2</div>
+              <h4 class="font-display font-semibold text-brand-textSecondary text-sm" id="step-title-2">Cognitive Routing</h4>
+            </div>
+
+            <div class="relative cursor-pointer transition-spring hover:scale-[1.01]" id="step-btn-3" onclick="selectStep(3)">
+              <div class="absolute -left-[37px] top-0.5 w-5 h-5 rounded-full bg-brand-surface border border-brand-borderTint flex items-center justify-center text-[9px] text-brand-textSecondary font-bold" id="step-dot-3">3</div>
+              <h4 class="font-display font-semibold text-brand-textSecondary text-sm" id="step-title-3">Verification & Build</h4>
+            </div>
+          </div>
+
+          <!-- Description detail panel -->
+          <div class="glow-card border border-brand-borderTint/30 rounded-xl p-4 mt-6 min-h-[140px]" id="step-desc-card">
+            <h3 class="font-display font-semibold text-sm text-brand-accentCyan mb-1" id="step-desc-title">Ingestion & Auth</h3>
+            <p class="text-sm text-brand-textSecondary leading-relaxed" id="step-desc-text">
+              The workflow begins by validating incoming API requests or file payloads. Access tokens are verified using JWT keys before parsing inputs into the agentic database tables.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 5: Licensing Plans (54% - 68% / Right-aligned narrative column layout) -->
+    <section class="scroll-section align-right" id="sec-pricing" data-enter="60" data-leave="75" data-animation="rotate-in">
+      <div class="section-inner">
+        <span class="section-label">004 / Licensing</span>
+        <h2 class="section-heading">Provision Instances</h2>
+        <p class="section-body">
+          Select the orchestration deployment model suited to your system load requirements.
+        </p>
+
+        <!-- Toggle Controls -->
+        <div class="inline-flex bg-brand-surface p-1 rounded-full border border-brand-borderTint w-fit">
+          <button id="toggle-monthly" onclick="setPricingPeriod('monthly')" class="px-3 py-1 text-[10px] font-semibold rounded-full bg-brand-accentCyan text-brand-base transition-spring">Monthly Billing</button>
+          <button id="toggle-annually" onclick="setPricingPeriod('annually')" class="px-3 py-1 text-[10px] font-semibold rounded-full text-brand-textSecondary hover:text-white transition-spring">Annual Saver</button>
+        </div>
+
+        <!-- Pricing Cards stacked vertically -->
+        <div class="space-y-4 w-full mt-2">
+          <!-- Card 1 -->
+          <div class="glow-card border border-brand-borderTint rounded-xl p-6 shadow-elevated">
+            <h3 class="font-display text-lg md:text-xl font-bold text-white">Orchestrator Cloud</h3>
+            <p class="text-sm md:text-base text-brand-textSecondary mt-2 leading-relaxed">Hosted cloud databases & standard webhook logic.</p>
+            <div class="mt-4 font-display font-bold text-2xl md:text-3xl text-brand-accentCyan" id="price-card-1">$3,200<span class="text-sm font-normal text-brand-textSecondary">/mo</span></div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="relative border-beam-container rounded-xl shadow-floating">
+            <div class="border-beam-glow-blur" style="animation-duration: 6s;"></div>
+            <div class="border-beam-glow" style="animation-duration: 6s;"></div>
+            
+            <div class="relative rounded-[11px] p-6 z-10 overflow-hidden flex flex-col gap-1 glow-card">
+              <h3 class="font-display text-lg md:text-xl font-bold text-white">Dedicated Vault</h3>
+              <p class="text-sm md:text-base text-brand-textSecondary mt-2 leading-relaxed">Self-hosted containers, AES-256 databases.</p>
+              <div class="mt-4 font-display font-bold text-2xl md:text-3xl text-brand-accentPurple" id="price-card-2">$9,500<span class="text-sm font-normal text-brand-textSecondary">/mo</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 6: Security & Metrics (68% - 82% / Centered layout over dark overlay) -->
+    <section class="scroll-section centered-section" id="sec-metrics" data-enter="75" data-leave="90" data-animation="stagger-up">
+      <div class="section-inner max-w-5xl">
+        <div>
+          <span class="section-label">005 / Security & Performance</span>
+          <h2 class="section-heading mt-2">SOC-2 Certified Data Vaults</h2>
+          <p class="section-body max-w-xl mx-auto mt-2">
+            Isolating agent task runtimes and vector indices locally within clients' network perimeter.
+          </p>
+        </div>
+
+        <!-- Metrics Counters Single Card (Horizontal Grid) -->
+        <div class="glow-card border border-brand-borderTint/30 rounded-2xl p-8 w-full max-w-4xl mx-auto relative overflow-hidden transition-spring hover:scale-[1.01]">
+          <!-- Grid of 4 stats columns -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-6 divide-y sm:divide-y-0 md:divide-x divide-brand-borderTint/30">
+            <!-- Stat 1 -->
+            <div class="flex flex-col items-center justify-center text-center px-2 py-4 sm:py-0">
+              <div class="flex-shrink-0 w-24 text-center font-display font-bold text-3xl text-brand-accentCyan bg-brand-accentCyan/10 py-2.5 rounded-xl border border-brand-accentCyan/25 shadow-glow-cyan mb-3" id="stat-count-1">0ms</div>
+              <span class="text-[9px] uppercase font-bold tracking-wider text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-full border border-emerald-400/20 mb-2">● Optimized</span>
+              <h4 class="font-display font-semibold text-white text-xs">Avg Response Latency</h4>
+              <p class="text-[10px] text-brand-textSecondary mt-1 leading-relaxed max-w-[170px]">Ultra-low latency runtime orchestration.</p>
+            </div>
+
+            <!-- Stat 2 -->
+            <div class="flex flex-col items-center justify-center text-center px-2 py-4 sm:py-0 md:pl-6">
+              <div class="flex-shrink-0 w-24 text-center font-display font-bold text-3xl text-brand-accentPurple bg-brand-accentPurple/10 py-2.5 rounded-xl border border-brand-accentPurple/25 shadow-glow-purple mb-3" id="stat-count-2">0%</div>
+              <span class="text-[9px] uppercase font-bold tracking-wider text-brand-accentPurple bg-brand-accentPurple/10 px-2.5 py-1 rounded-full border border-brand-accentPurple/20 mb-2">● Verified Active</span>
+              <h4 class="font-display font-semibold text-white text-xs">Accuracy Score</h4>
+              <p class="text-[10px] text-brand-textSecondary mt-1 leading-relaxed max-w-[170px]">High-fidelity cognitive intent routing.</p>
+            </div>
+
+            <!-- Stat 3 -->
+            <div class="flex flex-col items-center justify-center text-center px-2 py-4 sm:py-0 md:pl-6">
+              <div class="flex-shrink-0 w-24 text-center font-display font-bold text-3xl text-brand-accentCyan bg-brand-accentCyan/10 py-2.5 rounded-xl border border-brand-accentCyan/25 shadow-glow-cyan mb-3" id="stat-count-3">0</div>
+              <span class="text-[9px] uppercase font-bold tracking-wider text-brand-accentCyan bg-brand-accentCyan/10 px-2.5 py-1 rounded-full border border-brand-accentCyan/20 mb-2">● Pinned VMs</span>
+              <h4 class="font-display font-semibold text-white text-xs">Active VMs</h4>
+              <p class="text-[10px] text-brand-textSecondary mt-1 leading-relaxed max-w-[170px]">Isolated sandbox orchestrations.</p>
+            </div>
+
+            <!-- Stat 4 -->
+            <div class="flex flex-col items-center justify-center text-center px-2 py-4 sm:py-0 md:pl-6">
+              <div class="flex-shrink-0 w-24 text-center font-display font-bold text-3xl text-brand-accentPurple bg-brand-accentPurple/10 py-2.5 rounded-xl border border-brand-accentPurple/25 shadow-glow-purple mb-3" id="stat-count-4">0%</div>
+              <span class="text-[9px] uppercase font-bold tracking-wider text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-full border border-emerald-400/20 mb-2">● Active Saving</span>
+              <h4 class="font-display font-semibold text-white text-xs">Cost Reductions</h4>
+              <p class="text-[10px] text-brand-textSecondary mt-1 leading-relaxed max-w-[170px]">Semantic cache token minimization.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Wrap connect section and footer in a relative block container with solid background -->
+  <div class="relative z-50 w-full">
+    <!-- Section 7: Core Deployment CTA -->
+    <section class="centered-section" id="sec-connect">
+      <div class="section-inner max-w-lg">
+        <div>
+          <span class="section-label">006 / Deploy</span>
+          <h2 class="section-heading mt-2">Provision Agent Workspace</h2>
+          <p class="section-body mt-2">
+            Submit your parameters to compile and orchestrate an enterprise deployment blueprint.
+          </p>
+        </div>
+
+        <!-- Contact Consultation Form -->
+        <form class="glow-card border border-brand-borderTint/30 rounded-xl p-6 lg:p-8 space-y-6 w-full text-left relative overflow-hidden" id="connect-form" onsubmit="handleFormSubmit(event)">
+          <div class="absolute -top-[10%] -left-[10%] w-32 h-32 rounded-full bg-brand-accentCyan/5 blur-2xl"></div>
+
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="relative form-group">
+              <input type="text" id="user-name" placeholder=" " required class="w-full bg-white/3 border border-white/8 hover:border-white/20 focus:border-brand-accentCyan focus:bg-white/5 rounded-xl px-4 py-3 text-sm text-white outline-none transition-spring backdrop-blur-sm">
+              <label for="user-name" class="absolute left-4 top-3.5 text-xs text-brand-textSecondary/70 pointer-events-none transition-spring origin-left">Full Name</label>
+            </div>
+
+            <div class="relative form-group">
+              <input type="email" id="user-email" placeholder=" " required class="w-full bg-white/3 border border-white/8 hover:border-white/20 focus:border-brand-accentCyan focus:bg-white/5 rounded-xl px-4 py-3 text-sm text-white outline-none transition-spring backdrop-blur-sm">
+              <label for="user-email" class="absolute left-4 top-3.5 text-xs text-brand-textSecondary/70 pointer-events-none transition-spring origin-left">Email Address</label>
+            </div>
+          </div>
+
+          <div class="relative form-group">
+            <input type="text" id="project-role" placeholder=" " required class="w-full bg-white/3 border border-white/8 hover:border-white/20 focus:border-brand-accentCyan focus:bg-white/5 rounded-xl px-4 py-3 text-sm text-white outline-none transition-spring backdrop-blur-sm">
+            <label for="project-role" class="absolute left-4 top-3.5 text-xs text-brand-textSecondary/70 pointer-events-none transition-spring origin-left">Company / Role</label>
+          </div>
+
+          <div class="relative form-group">
+            <textarea id="project-details" placeholder=" " rows="3" required class="w-full bg-white/3 border border-white/8 hover:border-white/20 focus:border-brand-accentCyan focus:bg-white/5 rounded-xl px-4 py-3 text-sm text-white outline-none transition-spring resize-none backdrop-blur-sm"></textarea>
+            <label for="project-details" class="absolute left-4 top-3 text-xs text-brand-textSecondary/70 pointer-events-none transition-spring origin-left">Workspace Specification Requirements</label>
+          </div>
+
+          <button type="submit" class="w-full transition-spring magnetic-btn shine-btn inline-flex items-center justify-center font-semibold bg-gradient-to-r from-brand-accentCyan to-brand-accentPurple text-white hover:scale-[1.02] py-3.5 rounded-xl text-sm active:scale-[0.98]">
+            Initiate Core Deployment
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- 8. Translucent Site Footer -->
+    <footer class="border-t border-brand-borderTint bg-brand-surface/20 py-12 relative z-50">
+      <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-8">
+        <div class="space-y-4">
+          <a href="#" class="flex items-center space-x-3 group">
+            <img src="brand_assets/logo.png" alt="Aetheris Logo" class="h-6 w-6 object-contain rounded-md border border-brand-borderTint">
+            <span class="font-display font-bold text-base tracking-tight bg-gradient-to-r from-white to-brand-accentCyan bg-clip-text text-transparent">Aetheris</span>
+          </a>
+          <p class="text-[10px] text-brand-textSecondary/60 leading-relaxed">
+            Building isolated cognitive infrastructures and visual platforms. Engineered securely on local client instances.
+          </p>
+        </div>
+
+        <div>
+          <h5 class="text-[10px] font-semibold uppercase tracking-wider text-white mb-4">Core Tech</h5>
+          <ul class="space-y-2 text-[10px] text-brand-textSecondary/70">
+            <li><a href="#" class="hover:text-brand-accentCyan transition-spring">Agent Workspaces</a></li>
+            <li><a href="#" class="hover:text-brand-accentCyan transition-spring">RAG Search Systems</a></li>
+            <li><a href="#" class="hover:text-brand-accentCyan transition-spring">Visual Engineering</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h5 class="text-[10px] font-semibold uppercase tracking-wider text-white mb-4">Verification</h5>
+          <ul class="space-y-2 text-[10px] text-brand-textSecondary/70">
+            <li><a href="#" class="hover:text-brand-accentCyan transition-spring">Screenshot Loops</a></li>
+            <li><a href="#" class="hover:text-brand-accentCyan transition-spring">Visual Guidelines</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h5 class="text-[10px] font-semibold uppercase tracking-wider text-white mb-4">Legal</h5>
+          <ul class="space-y-2 text-[10px] text-brand-textSecondary/70">
+            <li><a href="#" class="hover:text-brand-accentCyan transition-spring">Security Vault</a></li>
+            <li><a href="#" class="hover:text-brand-accentCyan transition-spring">Terms of Deployment</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-6 border-t border-brand-borderTint/40 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-[10px] text-brand-textSecondary/50 space-y-4 md:space-y-0">
+        <div>© 2026 Aetheris AI. All rights reserved. Built with Antigravity Visual Engineering.</div>
+        <div class="flex space-x-6">
+          <a href="#" class="hover:text-brand-accentCyan transition-spring">Privacy</a>
+          <a href="#" class="hover:text-brand-accentCyan transition-spring">Contact</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- GSAP & Lenis smooth scroll CDNs -->
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <!-- Three.js Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+
+  <!-- Custom Scripts -->
+  <script src="js/app.js" defer></script>
+</body>
+</html>
