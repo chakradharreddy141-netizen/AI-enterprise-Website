@@ -289,8 +289,8 @@ function initDarkOverlay() {
   const overlay = document.getElementById('dark-overlay');
   
   const ranges = [
-    { start: 0.15, end: 0.30, maxOpacity: 0.88 },
-    { start: 0.75, end: 0.90, maxOpacity: 0.90 }
+    { start: 0.15, end: 0.30, maxOpacity: 0.15 },
+    { start: 0.75, end: 0.90, maxOpacity: 0.20 }
   ];
 
   ScrollTrigger.create({
