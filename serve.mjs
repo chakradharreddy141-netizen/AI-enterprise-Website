@@ -30,7 +30,14 @@ const server = http.createServer((req, res) => {
     filePath = '/index.html';
   }
 
-  const safeFilePath = path.join(__dirname, filePath.replace(/\.\./g, ''));
+  const safeFilePath = path.resolve(path.join(__dirname, filePath));
+  
+  // Security check: prevent directory traversal outside workspace
+  if (!safeFilePath.startsWith(__dirname)) {
+    res.writeHead(403, { 'Content-Type': 'text/plain' });
+    res.end('403 Forbidden');
+    return;
+  }
 
   fs.stat(safeFilePath, (err, stats) => {
     if (err || !stats.isFile()) {
