@@ -299,9 +299,9 @@
 
         <!-- Stepper Timeline Widget -->
         <div class="glow-card border border-brand-borderTint/30 rounded-xl p-6 mt-2">
-          <div class="relative flex flex-col space-y-6 pl-8 ml-2">
+          <div class="relative flex flex-col pl-8 ml-2">
             <!-- Dynamic progress connector line -->
-            <div class="absolute left-[12px] top-3 bottom-3 w-[2px] bg-brand-borderTint/40 z-0">
+            <div class="absolute left-[12px] top-4 bottom-2 w-[2px] bg-brand-borderTint/40 z-0">
               <div class="absolute top-0 left-0 w-full bg-gradient-to-b from-brand-accentCyan to-brand-accentPurple transition-all duration-500" id="step-progress-line" style="height: 0%;"></div>
             </div>
 
@@ -310,12 +310,12 @@
               <h4 class="font-display font-semibold text-white text-sm" id="step-title-1">Ingestion & Auth</h4>
             </div>
 
-            <div class="relative cursor-pointer transition-spring hover:scale-[1.01] z-10" id="step-btn-2" onclick="selectStep(2)">
+            <div class="relative cursor-pointer transition-spring hover:scale-[1.01] z-10 mt-6" id="step-btn-2" onclick="selectStep(2)">
               <div class="absolute -left-8 top-1 w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] text-brand-textSecondary font-bold backdrop-blur-md" id="step-dot-2">2</div>
               <h4 class="font-display font-semibold text-brand-textSecondary text-sm" id="step-title-2">Cognitive Routing</h4>
             </div>
 
-            <div class="relative cursor-pointer transition-spring hover:scale-[1.01] z-10" id="step-btn-3" onclick="selectStep(3)">
+            <div class="relative cursor-pointer transition-spring hover:scale-[1.01] z-10 mt-6" id="step-btn-3" onclick="selectStep(3)">
               <div class="absolute -left-8 top-1 w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] text-brand-textSecondary font-bold backdrop-blur-md" id="step-dot-3">3</div>
               <h4 class="font-display font-semibold text-brand-textSecondary text-sm" id="step-title-3">Verification & Build</h4>
             </div>
