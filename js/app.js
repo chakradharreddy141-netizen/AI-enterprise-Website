@@ -517,7 +517,11 @@ function initSectionAnimations() {
             tl.progress(1);
           } else {
             sec.classList.remove('active');
-            tl.progress(0);
+            if (p > leaveVal) {
+              tl.progress(1);
+            } else {
+              tl.progress(0);
+            }
           }
         }
       }
