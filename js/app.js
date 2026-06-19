@@ -545,6 +545,13 @@ function updateConnectorPaths() {
   if (!container) return;
   const containerRect = container.getBoundingClientRect();
 
+  // Update SVG resolution attributes to match actual layout size in pixels
+  const svg = container.querySelector('svg');
+  if (svg) {
+    svg.setAttribute('width', containerRect.width);
+    svg.setAttribute('height', containerRect.height);
+  }
+
   const n1 = document.getElementById('node-1');
   const n2 = document.getElementById('node-2');
   const n3 = document.getElementById('node-3');
