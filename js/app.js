@@ -1324,7 +1324,8 @@ function initNavClicks() {
       if (targetSec && lenis) {
         playUIClick();
         const enterVal = parseFloat(targetSec.dataset.enter) / 100;
-        const targetScroll = scrollContainer.offsetTop + (scrollContainer.offsetHeight * (enterVal + 0.05));
+        const maxScroll = scrollContainer.offsetHeight - window.innerHeight;
+        const targetScroll = scrollContainer.offsetTop + (maxScroll * (enterVal + 0.05));
         
         lenis.scrollTo(targetScroll, {
           duration: 1.5,
