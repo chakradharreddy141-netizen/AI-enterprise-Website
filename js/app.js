@@ -5,6 +5,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 // Global WebGL state variables
 let lenis = null;
+let isHeroVisible = true;
 
 
 // Initialize WebGL Canvas
@@ -155,25 +156,101 @@ function resizeCanvas() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-// Simulated Preloader for Premium Loading UX
+// Actual Resource Preloader for Premium Loading UX
 async function preloadFrames() {
   const loader = document.getElementById('loader');
   const loaderBar = document.getElementById('loader-bar');
   const loaderPercent = document.getElementById('loader-percent');
+  if (!loader || !loaderBar || !loaderPercent) return;
 
-  return new Promise((resolve) => {
-    let currentPct = 0;
-    const intervalTime = 12; // ~500ms total sequence
+  const images = Array.from(document.querySelectorAll('img'));
+  const totalImages = images.length;
+  let imagesLoadedCount = 0;
+  let fontsLoaded = false;
+  let sceneInit = false;
+  let progress = 0;
+
+  const updateProgress = () => {
+    let loadedParts = 0;
+    const totalParts = 3;
+
+    if (totalImages === 0 || imagesLoadedCount === totalImages) loadedParts++;
+    if (fontsLoaded) loadedParts++;
+    if (sceneInit) loadedParts++;
+
+    const targetProgress = Math.round((loadedParts / totalParts) * 100);
     
-    const interval = setInterval(() => {
-      currentPct += Math.floor(Math.random() * 8) + 4;
-      if (currentPct >= 100) {
-        currentPct = 100;
-        clearInterval(interval);
-        
-        loaderBar.style.width = `100%`;
-        loaderPercent.innerText = `100% LOADED`;
+    gsap.to({ val: progress }, {
+      val: targetProgress,
+      duration: 0.4,
+      ease: "power1.out",
+      onUpdate: function() {
+        progress = Math.min(100, Math.round(this.targets()[0].val));
+        loaderBar.style.width = `${progress}%`;
+        loaderPercent.innerText = `${progress}% LOADED`;
+      }
+    });
+  };
 
+  const imagesPromise = new Promise((resolve) => {
+    if (totalImages === 0) resolve();
+    let completed = 0;
+    images.forEach(img => {
+      if (img.complete) {
+        completed++;
+        imagesLoadedCount = completed;
+        if (completed === totalImages) {
+          updateProgress();
+          resolve();
+        }
+      } else {
+        img.addEventListener('load', () => {
+          completed++;
+          imagesLoadedCount = completed;
+          updateProgress();
+          if (completed === totalImages) resolve();
+        });
+        img.addEventListener('error', () => {
+          completed++;
+          imagesLoadedCount = completed;
+          updateProgress();
+          if (completed === totalImages) resolve();
+        });
+      }
+    });
+  });
+
+  const fontsPromise = document.fonts.ready.then(() => {
+    fontsLoaded = true;
+    updateProgress();
+  });
+
+  const scenePromise = new Promise((resolve) => {
+    setTimeout(() => {
+      sceneInit = true;
+      updateProgress();
+      resolve();
+    }, 150);
+  });
+
+  const timeoutPromise = new Promise(resolve => setTimeout(resolve, 3000));
+
+  await Promise.race([
+    Promise.all([imagesPromise, fontsPromise, scenePromise]),
+    timeoutPromise
+  ]);
+
+  return new Promise(resolve => {
+    gsap.to({ val: progress }, {
+      val: 100,
+      duration: 0.4,
+      ease: "power1.out",
+      onUpdate: function() {
+        const p = Math.round(this.targets()[0].val);
+        loaderBar.style.width = `${p}%`;
+        loaderPercent.innerText = `${p}% LOADED`;
+      },
+      onComplete: () => {
         setTimeout(() => {
           loader.style.opacity = 0;
           loader.style.pointerEvents = 'none';
@@ -182,11 +259,8 @@ async function preloadFrames() {
           }, 800);
           resolve();
         }, 300);
-      } else {
-        loaderBar.style.width = `${currentPct}%`;
-        loaderPercent.innerText = `${currentPct}% LOADED`;
       }
-    }, intervalTime);
+    });
   });
 }
 
@@ -432,6 +506,11 @@ function initSectionAnimations() {
           const range = leaveVal - enterVal;
           const localProgress = Math.min((p - enterVal) / (range * 0.4), 1);
           tl.progress(localProgress);
+          
+          // Dynamic realignment trigger for active pipeline simulator lines
+          if (sec.id === 'sec-simulator') {
+            updateConnectorPaths();
+          }
         } else {
           if (p > leaveVal && persist) {
             sec.classList.add('active');
@@ -483,7 +562,14 @@ function initStatsCounters() {
               snap: { textContent: stat.decimals === 0 ? 1 : 0.1 },
               onUpdate: function() {
                 const val = parseFloat(this.targets()[0].textContent);
-                el.innerText = val.toFixed(stat.decimals) + stat.suffix;
+                const formattedVal = val.toFixed(stat.decimals);
+                el.innerHTML = `${formattedVal}<span class="text-lg font-semibold text-zinc-300 ml-0.5">${stat.suffix}</span>`;
+              },
+              onStart: () => {
+                el.classList.add('animate-pulse', 'border-brand-accentCyan');
+              },
+              onComplete: () => {
+                el.classList.remove('animate-pulse', 'border-brand-accentCyan');
               }
             }
           );
@@ -518,14 +604,20 @@ window.selectStep = function(stepNumber) {
     if (!dot || !title) continue;
     
     if (i === stepNumber) {
-      dot.className = "absolute -left-[45px] top-1 w-6 h-6 rounded-full bg-brand-accentCyan border border-brand-base flex items-center justify-center text-[10px] text-brand-base font-bold shadow-glow-cyan";
+      dot.className = "absolute -left-8 top-1 w-6 h-6 rounded-full bg-brand-accentCyan border border-brand-base flex items-center justify-center text-[10px] text-brand-base font-bold shadow-glow-cyan";
       dot.innerText = i;
       title.className = "font-display font-semibold text-white transition-spring";
     } else {
-      dot.className = "absolute -left-[45px] top-1 w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] text-brand-textSecondary font-bold backdrop-blur-md";
+      dot.className = "absolute -left-8 top-1 w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] text-brand-textSecondary font-bold backdrop-blur-md";
       dot.innerText = i;
       title.className = "font-display font-semibold text-brand-textSecondary transition-spring";
     }
+  }
+
+  const progressLine = document.getElementById('step-progress-line');
+  if (progressLine) {
+    const heights = { 1: "0%", 2: "50%", 3: "100%" };
+    progressLine.style.height = heights[stepNumber];
   }
 
   const descCard = document.getElementById("step-desc-card");
@@ -676,6 +768,81 @@ window.runSimulation = function() {
   }, 3200);
 };
 
+// Interactive Node Inspection parameters data
+const nodeConfigs = {
+  "node-1": {
+    "Node Type": "Trigger / Ingestion",
+    "Endpoint": "https://api.aetheris.ai/v1/ingest",
+    "Security": "JWT Authentication + SOC-2 Client Verification",
+    "Throttle Rate": "10,000 req/sec",
+    "Status": "ACTIVE"
+  },
+  "node-2": {
+    "Node Type": "Cognitive Node / Classifier",
+    "Engine": "Aetheris Semantic Router v4.2",
+    "Latency": "8ms",
+    "Local Caching": "ENABLED (Semantic Cache Layer)",
+    "Status": "ACTIVE"
+  },
+  "node-3": {
+    "Node Type": "Data Node / Vector Search",
+    "Vector Indices": "12,000,000 document slices",
+    "Retrieval Engine": "Pinecone Local Host / pgvector",
+    "Query Time": "14ms",
+    "Status": "ACTIVE"
+  },
+  "node-4": {
+    "Node Type": "Success Action / Output Compiler",
+    "Build System": "Vercel / Puppeteer OCR Verification",
+    "Status": "IDLE"
+  }
+};
+
+window.inspectNode = function(nodeId) {
+  const panel = document.getElementById('node-inspect-panel');
+  const title = document.getElementById('inspect-node-title');
+  const jsonEl = document.getElementById('inspect-node-json');
+
+  if (!panel || !title || !jsonEl) return;
+
+  panel.classList.remove('hidden');
+  
+  // Remove border highlights from all nodes
+  document.querySelectorAll('#simulator-container .glow-card').forEach(n => {
+    n.classList.remove('border-brand-accentCyan', 'border-brand-accentPurple', 'border-emerald-400', 'ring-1', 'ring-brand-accentCyan/50', 'ring-brand-accentPurple/50', 'ring-emerald-400/50');
+  });
+
+  // Add highlight to current node
+  const activeNode = document.getElementById(nodeId);
+  if (activeNode) {
+    if (nodeId === 'node-1' || nodeId === 'node-2') {
+      activeNode.classList.add('border-brand-accentCyan', 'ring-1', 'ring-brand-accentCyan/50');
+    } else if (nodeId === 'node-3') {
+      activeNode.classList.add('border-brand-accentPurple', 'ring-1', 'ring-brand-accentPurple/50');
+    } else if (nodeId === 'node-4') {
+      activeNode.classList.add('border-emerald-400', 'ring-1', 'ring-emerald-400/50');
+    }
+  }
+  
+  const config = nodeConfigs[nodeId];
+  title.innerText = `Inspect: ${config["Node Type"]} (${nodeId.toUpperCase()})`;
+  jsonEl.innerText = JSON.stringify(config, null, 2);
+  
+  playUIClick();
+};
+
+window.closeInspectNode = function() {
+  const panel = document.getElementById('node-inspect-panel');
+  if (panel) panel.classList.add('hidden');
+  
+  // Remove border highlights from all nodes
+  document.querySelectorAll('#simulator-container .glow-card').forEach(n => {
+    n.classList.remove('border-brand-accentCyan', 'border-brand-accentPurple', 'border-emerald-400', 'ring-1', 'ring-brand-accentCyan/50', 'ring-brand-accentPurple/50', 'ring-emerald-400/50');
+  });
+  
+  playUIClick();
+};
+
 // Pricing period Switch
 const monthlyPrices = ["$3,200", "$9,500"];
 const annualPrices = ["$2,560", "$7,600"];
@@ -688,17 +855,35 @@ window.setPricingPeriod = function(period) {
 
   if (!toggleMonthlyBtn || !toggleAnnuallyBtn || !price1El || !price2El) return;
 
-  if (period === 'monthly') {
-    toggleMonthlyBtn.className = "px-4 py-1.5 text-xs font-semibold rounded-full bg-brand-accentCyan text-brand-base transition-spring";
-    toggleAnnuallyBtn.className = "px-4 py-1.5 text-xs font-semibold rounded-full text-brand-textSecondary hover:text-white transition-spring";
-    price1El.innerHTML = `${monthlyPrices[0]}<span class="text-sm font-normal text-brand-textSecondary">/mo</span>`;
-    price2El.innerHTML = `${monthlyPrices[1]}<span class="text-sm font-normal text-brand-textSecondary">/mo</span>`;
+  playUIClick();
+
+  const isMonthly = period === 'monthly';
+  const targetPrices = isMonthly ? monthlyPrices : annualPrices;
+
+  if (isMonthly) {
+    toggleMonthlyBtn.className = "px-3 py-1 text-[10px] font-semibold rounded-full bg-brand-accentCyan text-brand-base transition-spring";
+    toggleAnnuallyBtn.className = "px-3 py-1 text-[10px] font-semibold rounded-full text-brand-textSecondary hover:text-white transition-spring";
   } else {
-    toggleAnnuallyBtn.className = "px-4 py-1.5 text-xs font-semibold rounded-full bg-brand-accentCyan text-brand-base transition-spring";
-    toggleMonthlyBtn.className = "px-4 py-1.5 text-xs font-semibold rounded-full text-brand-textSecondary hover:text-white transition-spring";
-    price1El.innerHTML = `${annualPrices[0]}<span class="text-sm font-normal text-brand-textSecondary">/mo</span>`;
-    price2El.innerHTML = `${annualPrices[1]}<span class="text-sm font-normal text-brand-textSecondary">/mo</span>`;
+    toggleAnnuallyBtn.className = "px-3 py-1 text-[10px] font-semibold rounded-full bg-brand-accentCyan text-brand-base transition-spring";
+    toggleMonthlyBtn.className = "px-3 py-1 text-[10px] font-semibold rounded-full text-brand-textSecondary hover:text-white transition-spring";
   }
+
+  gsap.to([price1El, price2El], {
+    opacity: 0,
+    y: -10,
+    duration: 0.15,
+    onComplete: () => {
+      price1El.innerHTML = `${targetPrices[0]}<span class="text-sm font-normal text-brand-textSecondary">/mo</span>`;
+      price2El.innerHTML = `${targetPrices[1]}<span class="text-sm font-normal text-brand-textSecondary">/mo</span>`;
+      
+      gsap.to([price1El, price2El], {
+        opacity: 1,
+        y: 0,
+        duration: 0.25,
+        ease: "back.out(1.5)"
+      });
+    }
+  });
 };
 
 // Form Submit
@@ -878,6 +1063,13 @@ function initParticlesCanvas() {
       let targetVx = this.baseVx + Math.cos(this.angle) * 0.08;
       let targetVy = this.baseVy + Math.sin(this.angle) * 0.08;
 
+      // Ambient time-based wave force
+      const time = Date.now() * 0.001;
+      const waveX = Math.sin(time + this.x * 0.01) * 0.12;
+      const waveY = Math.cos(time + this.y * 0.01) * 0.12;
+      targetVx += waveX;
+      targetVy += waveY;
+
       if (particlesMouse.x && particlesMouse.y) {
         const dx = particlesMouse.x - this.x;
         const dy = particlesMouse.y - this.y;
@@ -945,6 +1137,10 @@ function initParticlesCanvas() {
   }
 
   function animateParticles() {
+    if (!isHeroVisible) {
+      requestAnimationFrame(animateParticles);
+      return;
+    }
     particlesCtx.clearRect(0, 0, particlesCanvas.width, particlesCanvas.height);
     for (let i = 0; i < particlesArray.length; i++) {
       particlesArray[i].update();
@@ -989,8 +1185,189 @@ function initConnectSectionAnimation() {
   );
 }
 
+// Active Nav Link Update
+function updateActiveNavLink(progress) {
+  const navLinks = document.querySelectorAll('.nav-link-item');
+  navLinks.forEach(link => {
+    link.classList.remove('text-brand-accentCyan', 'active');
+    link.classList.add('text-brand-textSecondary');
+  });
+
+  let activeIndex = -1;
+  if (progress >= 0.15 && progress < 0.30) activeIndex = 1; // Workspace Canvas (sec-simulator)
+  else if (progress >= 0.30 && progress < 0.45) activeIndex = 0; // Services (sec-services)
+  else if (progress >= 0.45 && progress < 0.60) activeIndex = 2; // Stepper (sec-stepper)
+  else if (progress >= 0.60 && progress < 0.75) activeIndex = 3; // Pricing (sec-pricing)
+  else if (progress >= 0.75 && progress < 0.90) activeIndex = 4; // Security (sec-metrics)
+
+  if (activeIndex !== -1 && navLinks[activeIndex]) {
+    navLinks[activeIndex].classList.add('text-brand-accentCyan', 'active');
+    navLinks[activeIndex].classList.remove('text-brand-textSecondary');
+  }
+}
+
+function initNavHighlight() {
+  const progressBar = document.getElementById('scroll-progress-bar');
+  
+  ScrollTrigger.create({
+    trigger: '#scroll-container',
+    start: "top top",
+    end: "bottom bottom",
+    scrub: true,
+    onUpdate: (self) => {
+      const p = self.progress;
+      updateActiveNavLink(p);
+      
+      // Update dynamic scroll progress bar track height
+      if (progressBar) {
+        progressBar.style.height = `${p * 100}%`;
+      }
+      
+      // Toggle 2D hero canvas visible state to save CPU overhead
+      isHeroVisible = (p <= 0.15);
+    }
+  });
+}
+
+// Web Audio API procedural sound system
+let audioCtx = null;
+
+function initAudio() {
+  const startAudio = () => {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  };
+  window.addEventListener('click', startAudio, { once: true });
+  window.addEventListener('touchstart', startAudio, { once: true });
+}
+
+function playUIClick() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.08);
+  
+  gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
+  
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.08);
+}
+
+function playUIHover() {
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime(1600, audioCtx.currentTime);
+  
+  gain.gain.setValueAtTime(0.005, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.03);
+  
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.03);
+}
+
+function attachSoundListeners() {
+  const elements = document.querySelectorAll('.magnetic-btn, .nav-link-item, .glow-card, #simulator-container .glow-card');
+  elements.forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      playUIHover();
+    });
+  });
+}
+
+// Navigation interceptor & Lenis smooth scroll mapping
+function initNavClicks() {
+  const navLinks = document.querySelectorAll('.nav-link-item');
+  const scrollContainer = document.getElementById('scroll-container');
+  if (!scrollContainer) return;
+
+  navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetHref = link.getAttribute('href');
+      const targetSec = document.querySelector(targetHref);
+      
+      if (targetSec && lenis) {
+        playUIClick();
+        const enterVal = parseFloat(targetSec.dataset.enter) / 100;
+        const targetScroll = scrollContainer.offsetTop + (scrollContainer.offsetHeight * (enterVal + 0.05));
+        
+        lenis.scrollTo(targetScroll, {
+          duration: 1.5,
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+        });
+      }
+    });
+  });
+}
+
+// Connect Form validation checks & border glow highlights
+function initFormValidation() {
+  const form = document.getElementById('connect-form');
+  if (!form) return;
+
+  const nameInput = document.getElementById('user-name');
+  const emailInput = document.getElementById('user-email');
+  const roleInput = document.getElementById('project-role');
+  const detailsInput = document.getElementById('project-details');
+
+  function validateInput(input, condition) {
+    if (!input) return;
+    if (condition) {
+      input.classList.remove('border-red-500/50', 'focus:border-red-500', 'shadow-glow-red');
+      input.classList.add('border-emerald-500/30', 'focus:border-emerald-500');
+    } else {
+      input.classList.remove('border-emerald-500/30', 'focus:border-emerald-500');
+      input.classList.add('border-red-500/50', 'focus:border-red-500');
+    }
+  }
+
+  if (nameInput) {
+    nameInput.addEventListener('input', () => {
+      validateInput(nameInput, nameInput.value.trim().length >= 2);
+    });
+  }
+
+  if (emailInput) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    emailInput.addEventListener('input', () => {
+      validateInput(emailInput, emailRegex.test(emailInput.value.trim()));
+    });
+  }
+
+  if (roleInput) {
+    roleInput.addEventListener('input', () => {
+      validateInput(roleInput, roleInput.value.trim().length >= 2);
+    });
+  }
+
+  if (detailsInput) {
+    detailsInput.addEventListener('input', () => {
+      validateInput(detailsInput, detailsInput.value.trim().length >= 10);
+    });
+  }
+}
+
 // Master Initialization on Load
 window.addEventListener('DOMContentLoaded', async () => {
+  initAudio();
   initCanvas();
   initLenis();
   initParticlesCanvas();
@@ -1004,10 +1381,15 @@ window.addEventListener('DOMContentLoaded', async () => {
   initSectionAnimations();
   initStatsCounters();
   initConnectSectionAnimation();
+  initNavHighlight();
   
   initGlowCards();
   initMagneticButtons();
   initSparkles();
+  
+  initFormValidation();
+  initNavClicks();
+  attachSoundListeners();
   
   updateConnectorPaths();
   
