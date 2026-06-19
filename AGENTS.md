@@ -50,5 +50,5 @@
 - Do not add sections, features, or content not in the reference
 - Do not "improve" a reference design — match it
 - Do not stop after one screenshot pass
-- Do not use `transition-all`
 - Do not use default Tailwind blue/indigo as primary color
+- **Always push changes to GitHub:** Immediately stage, commit, and push any modifications to the remote repository `https://github.com/chakradharreddy141-netizen/AI-enterprise-Website`.
