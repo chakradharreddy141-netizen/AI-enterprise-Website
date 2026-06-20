@@ -24,7 +24,7 @@ const MIME_TYPES = {
 const server = http.createServer((req, res) => {
   // Normalize path and remove query parameters/hash
   const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
-  let filePath = parsedUrl.pathname;
+  let filePath = decodeURIComponent(parsedUrl.pathname);
   
   if (filePath === '/') {
     filePath = '/index.html';
